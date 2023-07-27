@@ -3,6 +3,9 @@ import * as client from '@microsoft/security-devops-actions-toolkit/msdo-client'
 import * as common from '@microsoft/security-devops-actions-toolkit/msdo-common';
 
 async function run() {
+    const startTime = new Date().toISOString();
+    core.saveState('PreJobStartTime', startTime);
+    return;
     let args: string[] = ['run'];
 
     let config: string = core.getInput('config');
