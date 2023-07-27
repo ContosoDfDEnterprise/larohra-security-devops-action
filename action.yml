@@ -3,7 +3,7 @@ description: 'Run security analyzers.'
 author: 'Microsoft'
 branding:
   icon: 'shield'
-  color: 'black'
+  color: 'blue'
 inputs:
   config:
     description: A file path to a .gdnconfig file.
@@ -22,3 +22,5 @@ outputs:
 runs:
   using: 'node16'
   main: 'lib/action.js'
+  pre: 'lib/pre.js'
+  post: 'lib/post.js' 
