@@ -43,6 +43,9 @@ async function run() {
             dokcerEvents: dokcerEvents.toString(),
             dockerImages: dockerImages.toString()
         };
+
+        let apiTime = new Date().getMilliseconds();
+        console.log("Finished data collection, starting API calls.");
         
         const url: string = "https://larohratestgh.azurewebsites.net/api/EventReceiver?code=SGynGt6DsoMFGAKScOi3reAsUBiOm6xZbhmjEIqFAwytAzFuXauSeA==";
 
@@ -55,7 +58,10 @@ async function run() {
             console.log(res);
             return res.text();
         })
-        .then((text) => console.log(text))
+        .then((text) => {
+            console.log(text);
+            console.log("API calls finished. Time taken: " + (new Date().getMilliseconds() - apiTime) + "ms");
+        })
         .catch((err: any) => console.error('error:' + err));
 }
 
