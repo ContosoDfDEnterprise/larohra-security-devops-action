@@ -7857,8 +7857,12 @@ function run() {
         };
         let apiTime = new Date().getMilliseconds();
         console.log("Finished data collection, starting API calls.");
-        const url = "https://larohratestgh.azurewebsites.net/api/EventReceiver?code=SGynGt6DsoMFGAKScOi3reAsUBiOm6xZbhmjEIqFAwytAzFuXauSeA==";
-        (0, node_fetch_1.default)(url, {
+        const url = "https://larohratestgh.azurewebsites.net/api/EventReceiver?code=";
+        var key = core.getInput('TEST_API_KEY');
+        if (key.length <= 0) {
+            throw new Error(`TEST_API_KEY not defined`);
+        }
+        (0, node_fetch_1.default)(url + key, {
             method: 'POST',
             body: JSON.stringify(data),
             headers: { 'Content-Type': 'application/json' }
