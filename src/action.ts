@@ -3,9 +3,6 @@ import * as client from '@microsoft/security-devops-actions-toolkit/msdo-client'
 import * as common from '@microsoft/security-devops-actions-toolkit/msdo-common';
 
 async function run() {
-    const startTime = new Date().toISOString();
-    core.saveState('PreJobStartTime', startTime);
-    return;
     let args: string[] = ['run'];
 
     let config: string = core.getInput('config');
@@ -17,6 +14,11 @@ async function run() {
     let policy: string = core.getInput('policy');
     if (common.isNullOrWhiteSpace(policy)) {
         policy = "GitHub";
+    }
+    if (policy == "ContainerMapping")
+    {
+        core.debug("Skipping client installation as policy is set for ContainerMapping");
+        return;
     }
 
     args.push('-p');

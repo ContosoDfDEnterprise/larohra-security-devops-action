@@ -7653,9 +7653,6 @@ const client = __importStar(__nccwpck_require__(7211));
 const common = __importStar(__nccwpck_require__(6517));
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
-        const startTime = new Date().toISOString();
-        core.saveState('PreJobStartTime', startTime);
-        return;
         let args = ['run'];
         let config = core.getInput('config');
         if (!common.isNullOrWhiteSpace(config)) {
@@ -7665,6 +7662,10 @@ function run() {
         let policy = core.getInput('policy');
         if (common.isNullOrWhiteSpace(policy)) {
             policy = "GitHub";
+        }
+        if (policy == "ContainerMapping") {
+            core.debug("Skipping client installation as policy is set for ContainerMapping");
+            return;
         }
         args.push('-p');
         args.push(policy);
