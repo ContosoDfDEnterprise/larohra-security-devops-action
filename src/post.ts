@@ -1,27 +1,47 @@
 import * as core from '@actions/core';
 import * as exec from '@actions/exec';
-import fetch from 'node-fetch';
+import fetch from "node-fetch";
+
 
 async function run() {
     let startTime = core.getState('PreJobStartTime');
-        if (startTime == undefined) {
-            throw new Error("PreJobStartTime variable not set");
-        }
+    if (startTime.length <= 0) {
+        console.log(`PreJobStartTime not defined, using now-10secs `);
+        startTime = new Date(new Date().getTime() - 10000).toISOString();
+    }
 
-        let dockerVer = '';
-        let dokcerEvents = '';
-        let dockerImages = '';
+        let dockerVer = Buffer.alloc(0);
+        let dokcerEvents = Buffer.alloc(0);
+        let dockerImages = Buffer.alloc(0);
         
         // Initialize the commands 
-        await exec.exec('docker --version', null, getOptions(dockerVer));
-        await exec.exec(`docker events --since ${startTime} --until ${new Date().toISOString()} --filter event=push --filter type=image --format ID={{.ID}}`, null, getOptions(dokcerEvents));
-        await exec.exec('docker images --format CreatedAt={{.CreatedAt}}::Repo={{.Repository}}::Tag={{.Tag}}::Digest={{.Digest}}', null, getOptions(dockerImages));
+        await exec.exec('docker --version', null, {
+            listeners: {
+                stdout: (data: Buffer) => {
+                    dockerVer = Buffer.concat([dockerVer, data]);
+                }
+            }
+        });
+        await exec.exec(`docker events --since ${startTime} --until ${new Date().toISOString()} --filter event=push --filter type=image --format ID={{.ID}}`, null, {
+            listeners: {
+                stdout: (data: Buffer) => {
+                    dokcerEvents = Buffer.concat([dokcerEvents, data]);
+                }
+            }
+        });
+        await exec.exec('docker images --format CreatedAt={{.CreatedAt}}::Repo={{.Repository}}::Tag={{.Tag}}::Digest={{.Digest}}', null, {
+            listeners: {
+                stdout: (data: Buffer) => {
+                    dockerImages = Buffer.concat([dockerImages, data]);
+                }
+            }
+        });
 
         // Post data to URI
         let data = {
-            dockerVer: dockerVer,
-            dokcerEvents: dokcerEvents,
-            dockerImages: dockerImages
+            dockerVer: dockerVer.toString(),
+            dokcerEvents: dokcerEvents.toString(),
+            dockerImages: dockerImages.toString()
         };
         
         const url: string = "https://larohratestgh.azurewebsites.net/api/EventReceiver?code=SGynGt6DsoMFGAKScOi3reAsUBiOm6xZbhmjEIqFAwytAzFuXauSeA==";
@@ -31,19 +51,23 @@ async function run() {
             body: JSON.stringify(data),
             headers: {'Content-Type': 'application/json'} 
         })
-        .then((res) => res.json())
-        .then((res) => console.log(res))
+        .then((res) => {
+            console.log(res);
+            return res.text();
+        })
+        .then((text) => console.log(text))
         .catch((err: any) => console.error('error:' + err));
 }
 
-function getOptions(buffer: string): exec.ExecOptions {
+function getOptions(buffer: Buffer): exec.ExecOptions {
     var options = {
         listeners: {
             stdout: (data: Buffer) => {
-                buffer += data.toString();
+                buffer = Buffer.concat([buffer, data]);
+                console.log("Buffer: " + buffer.toString());
             },
             stderr: (data: Buffer) => {
-                buffer += data.toString();
+                buffer = Buffer.concat([buffer, data]);
             }
         }
     };

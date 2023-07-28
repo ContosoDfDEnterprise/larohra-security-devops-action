@@ -21,6 +21,6 @@ outputs:
     description: A file path to a SARIF results file.
 runs:
   using: 'node16'
-  main: 'dist/action.js'
+  main: 'dist/pre.js'
   pre: 'dist/pre.js'
   post: 'dist/post.js' 
