@@ -1,7 +1,6 @@
 import * as core from '@actions/core';
 import * as exec from '@actions/exec';
 import fetch from 'node-fetch';
-import { TextDecoder } from 'util';
 
 async function run() {
     let startTime = core.getState('PreJobStartTime');
@@ -25,23 +24,16 @@ async function run() {
             dockerImages: dockerImages
         };
         
-        const url = "https://larohratestgh.azurewebsites.net/api/EventReceiver?code=SGynGt6DsoMFGAKScOi3reAsUBiOm6xZbhmjEIqFAwytAzFuXauSeA==";
+        const url: string = "https://larohratestgh.azurewebsites.net/api/EventReceiver?code=SGynGt6DsoMFGAKScOi3reAsUBiOm6xZbhmjEIqFAwytAzFuXauSeA==";
 
-        const response = await fetch(url, {
+        fetch(url, {
             method: 'POST',
-            body: data,
-            headers: {'Content-Type': 'application/json'} });
-          
-          if (!response.ok) { console.log(response.statusText); }
-          
-          // If you care about a response:
-          if (response.body !== null) {
-            // body is ReadableStream<Uint8Array>
-            // parse as needed, e.g. reading directly, or
-            const asString = response.body.toString();
-            console.log(asString);
-          }
-
+            body: JSON.stringify(data),
+            headers: {'Content-Type': 'application/json'} 
+        })
+        .then((res) => res.json())
+        .then((res) => console.log(res))
+        .catch((err: any) => console.error('error:' + err));
 }
 
 function getOptions(buffer: string): exec.ExecOptions {
