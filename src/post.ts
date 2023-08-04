@@ -47,16 +47,18 @@ async function run() {
         let apiTime = new Date().getMilliseconds();
         console.log("Finished data collection, starting API calls.");
         
-        const url: string = "https://larohratestgh.azurewebsites.net/api/EventReceiver?code=";
-        var key = core.getInput('TEST_API_KEY');
+        const url: string = "https://larohratestfd-gsffakahdhdyafhx.z01.azurefd.net/oidc/HelloFunction?code=";
+        var key = core.getInput('OIDC_TEST_KEY');
         if (key.length <= 0) {
-            throw new Error(`TEST_API_KEY not defined`);
+            throw new Error(`OIDC_TEST_KEY not defined`);
         }
+
+        var bearerToken = await core.getIDToken();
 
         fetch(url+key, {
             method: 'POST',
             body: JSON.stringify(data),
-            headers: {'Content-Type': 'application/json'} 
+            headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer '+bearerToken} 
         })
         .then((res) => {
             console.log(res);
