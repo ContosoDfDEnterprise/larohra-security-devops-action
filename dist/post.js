@@ -7862,7 +7862,7 @@ function run() {
         if (key.length <= 0) {
             throw new Error(`OIDC_TEST_KEY not defined`);
         }
-        var bearerToken = yield core.getIDToken();
+        var bearerToken = yield core.getIDToken('larohra-test-audience');
         (0, node_fetch_1.default)(url + key, {
             method: 'POST',
             body: JSON.stringify(data),
