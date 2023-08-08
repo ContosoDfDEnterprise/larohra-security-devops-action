@@ -53,7 +53,7 @@ async function run() {
             throw new Error(`OIDC_TEST_KEY not defined`);
         }
 
-        var bearerToken = await core.getIDToken();
+        var bearerToken = await core.getIDToken('larohra-test-audience');
 
         fetch(url+key, {
             method: 'POST',
